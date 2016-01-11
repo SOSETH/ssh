@@ -61,12 +61,4 @@
   when: authorized_keys.stat.exists
 
 
-# NOTE 'daemon-reload' only needs to be run when the above task changed. Now it is always run.
-- name: systemd daemon-reload
-  local_action: shell ssh "{{ item.name }}@{{ inventory_hostname }}" "systemctl --user daemon-reload && systemctl --user enable ssh-agent.service"
-  register: command_result
-  changed_when: command_result.stdout != '' or command_result.stderr != ''
-  with_items: all_accounts
-
-
 - meta: flush_handlers
