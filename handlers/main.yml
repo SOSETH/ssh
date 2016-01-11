@@ -1,0 +1,6 @@
+---
+- name: restart ssh
+  service: name=ssh state=restarted
+
+- name: delete host keys on runner
+  local_action: 'shell shred --iterations 0 --random-source=/dev/zero --remove --zero "{{ ssh_tmpdir }}"/*'

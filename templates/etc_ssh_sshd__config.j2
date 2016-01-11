@@ -1,0 +1,144 @@
+# Managed with Ansible
+
+# Meta
+
+# Protocol
+Protocol 2
+
+## Protocol Version 1 only options
+#KeyRegenerationInterval
+#RhostsRSAAuthentication
+#RSAAuthentication
+#ServerKeyBits
+
+# Network
+AddressFamily any
+Port {{ ansible_ssh_port | default(22) }}
+ListenAddress ::
+ListenAddress 0.0.0.0
+TCPKeepAlive yes
+#IPQoS
+
+## DNS
+UseDNS no
+
+# Keys
+HostKey         /etc/ssh/ssh_host_rsa_key
+HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub
+HostKey         /etc/ssh/ssh_host_ed25519_key
+HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
+#TrustedUserCAKeys
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Authentication
+UsePrivilegeSeparation sandbox
+MaxStartups 10:30:100
+MaxAuthTries 6
+LoginGraceTime 30
+# Usually used to configure multi-factor authentication, AuthenticationMethods can also be used to restrict the available methods to just the specified list. The elements on the list still have to be enabled with their own respective option, so, for "publickey" the option "PubkeyAuthentication" has to be "yes".
+AuthenticationMethods "publickey"
+PermitRootLogin without-password
+StrictModes yes
+
+## Messages
+#VersionAddendum
+#Banner /etc/issue.net
+DebianBanner yes
+
+## Password
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+## Keys
+PubkeyAuthentication yes
+#AuthorizedKeysCommand
+#AuthorizedKeysCommandUser
+AuthorizedKeysFile /etc/ssh/authorized_keys/authorized_keys /etc/ssh/authorized_keys/authorized_keys2 %h/.ssh/authorized_keys %h/.ssh/authorized_keys2 %h/.ssh/authorized_alien_keys
+#AuthorizedPrincipalsFile
+#RevokedKeys
+#HostKeyAgent
+
+## Challenge-response options
+ChallengeResponseAuthentication no
+KbdInteractiveAuthentication no
+
+## Kerberos options
+KerberosAuthentication no
+#KerberosGetAFSToken
+#KerberosOrLocalPasswd
+#KerberosTicketCleanup
+
+## GSSAPI options
+GSSAPIAuthentication no
+#GSSAPIKeyExchange
+#GSSAPICleanupCredentials
+#GSSAPIStrictAcceptorCheck
+#GSSAPIStoreCredentialsOnRekey
+
+## Host
+HostbasedAuthentication no
+#IgnoreRhosts
+#IgnoreUserKnownHosts
+#HostbasedUsesNameFromPacketOnly
+
+## PAM
+UsePAM yes
+
+## Login
+UseLogin no
+
+## User
+#DenyUsers
+#AllowUsers
+#DenyGroups
+#AllowGroups
+
+# After authentication
+#ChrootDirectory
+#ForceCommand
+
+## Messages
+PrintMotd no
+PrintLastLog yes
+
+## Environment
+PermitUserEnvironment no
+AcceptEnv LANG LC_*
+
+# Session features
+AllowAgentForwarding yes
+AllowTcpForwarding yes
+PermitOpen any
+#GatewayPorts
+#PermitTunnel
+#PermitTTY
+
+## Connection
+ClientAliveInterval 600
+ClientAliveCountMax 3
+Compression delayed
+MaxSessions 10
+
+## X11
+{% if ssh_allow_x11_fwd %}
+X11Forwarding yes
+X11DisplayOffset 10
+{% else %}
+X11Forwarding no
+#X11DisplayOffset 10
+{% endif %}
+#X11UseLocalhost
+#XAuthLocation
+
+# Crypto
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160
+RekeyLimit default 6h
+
+# Misc
+#PidFile
+Subsystem sftp internal-sftp

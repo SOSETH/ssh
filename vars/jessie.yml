@@ -1,0 +1,8 @@
+---
+pkgs:
+  - openssh-server
+  - openssh-client
+  - coreutils
+  - sshfs
+
+bpo_pkgs: []

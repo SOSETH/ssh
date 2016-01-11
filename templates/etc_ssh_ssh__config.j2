@@ -1,0 +1,157 @@
+# Managed with Ansible
+
+###### DDNS ######
+{% for host in groups['loc_home'] %}
+Host {{ host }}
+	#HostName
+	HostKeyAlias {{ host }}
+	CheckHostIP no
+	Port {{ hostvars[host]["ansible_ssh_port"] | default(22) }}
+
+{% endfor %}
+{% for host in groups['ddns'] %}
+Host {{ host }}
+	#HostName
+	HostKeyAlias {{ host }}
+	CheckHostIP no
+	Port {{ hostvars[host]["ansible_ssh_port"] | default(22) }}
+
+{% endfor %}
+
+
+###### Default ######
+Host *
+# Meta
+#IgnoreUnknown
+
+# Protocol
+Protocol 2
+
+## Protocol Version 1 only options
+#RhostsRSAAuthentication
+#RSAAuthentication
+#Cipher
+#CompressionLevel
+
+# Network
+AddressFamily any
+UsePrivilegedPort no
+Port 22
+#BindAddress
+TCPKeepAlive yes
+ConnectionAttempts 1
+ConnectTimeout 3
+#IPQoS
+#ProxyCommand ssh -q -W %h:%p gateway.example.com
+ProxyUseFdpass no
+
+## DNS
+#CanonicalDomains
+CanonicalizeFallbackLocal yes
+CanonicalizeHostname no
+#CanonicalizeMaxDots 1
+#CanonicalizePermittedCNAMEs
+
+# Keys
+CheckHostIP yes
+{% for key in ssh_user_keys %}
+#IdentityFile ~/.ssh/{{ key }}
+{% endfor %}
+HashKnownHosts no
+
+# Logging
+LogLevel INFO
+
+# Authentication
+BatchMode no
+#PKCS11Provider
+PreferredAuthentications publickey,password,hostbased,keyboard-interactive,gssapi-with-mic
+
+## Messages
+
+## Password
+PasswordAuthentication no
+NumberOfPasswordPrompts 10
+
+## Keys
+# Only enable PubkeyAuthentication for hosts that have IdentityFile specified too, otherwise all default public user keys get leaked to unknown hosts on connection attempt.
+PubkeyAuthentication no
+StrictHostKeyChecking ask
+VisualHostKey no
+HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-rsa-cert-v00@openssh.com,ssh-ed25519,ssh-rsa
+IdentitiesOnly yes
+GlobalKnownHostsFile /etc/ssh/known_hosts/known_hosts /etc/ssh/known_hosts/known_hosts2 /etc/ssh/known_hosts/known_certs /etc/ssh/known_hosts/known_certs2
+VerifyHostKeyDNS no
+UserKnownHostsFile ~/.ssh/known_hosts ~/.ssh/known_hosts2 ~/.ssh/known_certs ~/.ssh/known_certs2
+NoHostAuthenticationForLocalhost no
+
+## Challenge-response passwords
+ChallengeResponseAuthentication no
+#KbdInteractiveAuthentication
+#KbdInteractiveDevices
+
+## Kerberos options
+
+## GSSAPI options
+GSSAPIAuthentication no
+#GSSAPIClientIdentity
+#GSSAPIDelegateCredentials
+#GSSAPIKeyExchange
+#GSSAPIRenewalForcesRekey
+#GSSAPIServerIdentity
+#GSSAPITrustDns
+
+## Host
+HostbasedAuthentication no
+#EnableSSHKeysign
+
+## PAM
+
+## Login
+
+## User
+User root
+
+# After authentication
+PermitLocalCommand no
+#LocalCommand
+RequestTTY auto
+
+## Messages
+
+## Environment
+SendEnv LANG LC_*
+
+# Session features
+EscapeChar ~
+ForwardAgent no
+ClearAllForwardings no
+Tunnel no
+TunnelDevice any:any
+
+## Connection
+ServerAliveInterval 600
+ServerAliveCountMax 3
+Compression yes
+ControlMaster auto
+ControlPath ~/.ssh/control/%r@%h:%p
+ControlPersist 1m
+#DynamicForward
+ExitOnForwardFailure yes
+GatewayPorts no
+#LocalForward
+#RemoteForward
+
+## X11
+ForwardX11 no
+ForwardX11Trusted no
+#ForwardX11Timeout
+#XAuthLocation
+
+# Crypto
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160
+RekeyLimit default 6h
+
+# Misc

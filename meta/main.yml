@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  author: Damiano Boppart, Philip Stark
+  description: See tasks/main.yml
+  company: SOSETH
+  # issue_tracker_url: 
+  license: GNU General Public License, version 3 (GPL-3.0)
+  min_ansible_version: 1.9.1
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        # - wheezy
+  categories:
+    #- cloud
+    #- cloud:ec2
+    #- cloud:gce
+    #- cloud:rax
+    #- clustering
+    #- database
+    #- database:nosql
+    #- database:sql
+    #- development
+    #- monitoring
+    #- networking
+    #- packaging
+    - system
+    #- web
+dependencies:
+  - { role: apt }
+  - { role: regional }
+  - { role: users }
+  - { role: zsh }
