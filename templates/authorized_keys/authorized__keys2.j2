@@ -1,4 +1,0 @@
-# Managed with Ansible
-{% for key in ssh_authorized_keys %}
-{{ lookup('file', ssh_user_key_loc + '/' + key + '.pub') }}
-{% endfor %}

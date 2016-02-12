@@ -7,36 +7,14 @@ ssh_user_keys:
 ssh_authorized_keys:
   - id_rsa
 
-# Configuration for sshfs zsh aliases.
-# ssh_fs_aliases:
-#   - name: foobar # The alias (for mounting and unmounting this share) will have the name s-<name> and su-<name>.
-#     user: foo # The username on the remote machine
-#     host: foo.ethz.ch # The domain of the remote machine
-#     path: /srv/www # The path on the remote machine
-#     mountp: foobar # The local mount point will be /media/<mountp>
-ssh_fs_aliases: []
-
-
-# If True, add the set of zsh aliases for sshfs specified with ssh_fs_aliases
-ssh_make_fs_aliases: false
-
 # If set to true, the SSH server on target will allow X11 forwarding.
 ssh_allow_x11_fwd: false
-
-# Passphrase for newly created SSH user keys. Some keys may be created without passphrase.
-#ssh_pass: FooBarBaz
 
 # If set to true, create a new set of SSH host keys, replacing all keys found on the target machine. The number of keys on the target machine may change with this operation (i.e.: present DSA keys will be removed).
 # WARNING: This option should never be set to true in any place where it is likely to be run more than once ever. It is recommended to only change this variable using ansible-playbook command-line arguments, for example:
 # Renewing the SSH host keys should not break client configuration for any host, as server authentication relies on host key signatures.
 # NOTE: To use this feature, Ansible has to be run with the tag "ssh_key_management"
 ssh_renew_host_keys: false
-
-# If set to true, create a new set of SSH user keys, replacing the old keys in the Ansible repository.
-# WARNING: This option should never be set to true in any place where it is likely to be run more than once ever. It is recommended to only change this variable using ansible-playbook command-line arguments, for example:
-# WARNING: Renewing the SSH user keys will break all SSH logins from targets where Ansible is subsequently run. Renewing the SSH user keys will break all SSH logins to targets where Ansible is subsequently run.
-# NOTE: To use this feature, Ansible has to be run with the tag "ssh_key_management"
-ssh_renew_user_keys: false
 
 # If set to true, create a new key for signing of SSH host keys, replacing the old keys in the Ansible repository.
 # WARNING: This option should never be set to true in any place where it is likely to be run more than once ever. It is recommended to only change this variable using ansible-playbook command-line arguments, for example:
@@ -52,7 +30,7 @@ ssh_ca_key_loc: '{{ config_repo_path }}/local/ssh/host_ca/host_ca_rsa'
 # Directory where SSH host public keys are stored, when a new key has been generated. Only freshly generated keys will be collected.
 ssh_host_key_loc: '{{ config_repo_path }}/local/ssh/host_keys'
 # Directory where SSH user keys are stored
-ssh_user_key_loc: '{{ config_repo_path }}/local/ssh/user_keys'
+ssh_user_key_loc: '{{ config_repo_path }}/ssh-public-keys'
 # Directory where public SSH user keys of alien users are stored
 ssh_alien_key_loc: '{{ config_repo_path }}/local/ssh/alien_keys'
 # tmpfs for storing all generated key material in on the runner
@@ -61,9 +39,12 @@ ssh_all_user_keys: # All possible user key names. Keys that aren't configured to
   - id_rsa
 
 # List of ssh packages that should be installed.
-# pkgs: NOTE: This variable should be set in the per-release vars file.
+pkgs:
+  - openssh-server
+  - openssh-client
+  - coreutils
+  - sshfs
 
 # List of ssh packages that should be installed from backports.
-# bpo_pkgs: NOTE: This variable should be set in the per-release vars file.
+bpo_pkgs: []
 
-# Remember: shred is in the package coreutils, that's why it's on the list.

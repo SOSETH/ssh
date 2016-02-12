@@ -1,9 +1,6 @@
 ---
 # Install and configure OpenSSH server and client
 
-- name: load platform-specific variables
-  include_vars: all.yml
-
 ## Install ssh packages
 - name: install ssh packages from backports
   apt: name={{ item }} state=latest default_release={{ ansible_distribution_release }}-backports update_cache=yes cache_valid_time=1800
@@ -44,19 +41,8 @@
 
 
 ## Manage authorized_keys
-- name: create /etc/ssh/authorized_keys/
-  file: path=/etc/ssh/authorized_keys state=directory owner=root group=root mode=0755
-
-# TODO: Limit backup key with "force command"
-- name: generate system-wide authorized_keys2
-  template: src=authorized_keys/authorized__keys2.j2 dest=/etc/ssh/authorized_keys/authorized_keys2 owner=root group=root mode=0444
-
-- stat: path=/etc/ssh/authorized_keys/authorized_keys
-  register: authorized_keys
-
-- name: set permissions of system-wide authorized_keys
-  file: dest=/etc/ssh/authorized_keys/authorized_keys owner=root group=root mode=0644
-  when: authorized_keys.stat.exists
-
+- name: add authorized keys
+  authorized_key: user="root" key="{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
+  with_items: ssh_authorized_keys
 
 - meta: flush_handlers
