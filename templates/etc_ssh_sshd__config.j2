@@ -13,7 +13,7 @@ Protocol 2
 
 # Network
 AddressFamily any
-Port {{ ansible_ssh_port | default(22) }}
+Port 22
 ListenAddress ::
 ListenAddress 0.0.0.0
 TCPKeepAlive yes
@@ -140,3 +140,4 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-
 RekeyLimit default 6h
 
 # Misc
+Subsystem sftp /usr/lib/openssh/sftp-server
