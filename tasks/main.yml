@@ -2,13 +2,12 @@
 # Install and configure OpenSSH server and client
 
 - name: load platform-specific variables
-  include_vars: '{{ ansible_distribution_release }}.yml'
+  include_vars: all.yml
 
 ## Install ssh packages
 - name: install ssh packages from backports
   apt: name={{ item }} state=latest default_release={{ ansible_distribution_release }}-backports update_cache=yes cache_valid_time=1800
   with_items: bpo_pkgs
-  when: not ansible_lsb['id'] == 'Raspbian'
 
 - name: install ssh packages
   apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
@@ -26,7 +25,6 @@
 - name: restart ssh
   service: name=ssh state=restarted
   when: result.changed
-
 
 ## Manage known_hosts
 - name: create /etc/ssh/known_hosts
