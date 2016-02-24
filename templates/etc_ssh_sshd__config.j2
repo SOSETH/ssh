@@ -13,7 +13,7 @@ Protocol 2
 
 # Network
 AddressFamily any
-Port 22
+Port {{ ansible_port | default(22,boolean=True) }}
 ListenAddress ::
 ListenAddress 0.0.0.0
 TCPKeepAlive yes
