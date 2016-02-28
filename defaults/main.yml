@@ -45,6 +45,3 @@ pkgs:
   - coreutils
   - sshfs
 
-# List of ssh packages that should be installed from backports.
-bpo_pkgs: []
-

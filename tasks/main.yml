@@ -2,13 +2,9 @@
 # Install and configure OpenSSH server and client
 
 ## Install ssh packages
-- name: install ssh packages from backports
-  apt: name={{ item }} state=latest default_release={{ ansible_distribution_release }}-backports update_cache=yes cache_valid_time=1800
-  with_items: bpo_pkgs
-
 - name: install ssh packages
   apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
-  with_items: pkgs
+  with_items: '{{pkgs}}'
 
 
 ## Manage host configuration
@@ -43,6 +39,6 @@
 ## Manage authorized_keys
 - name: add authorized keys
   authorized_key: user="root" key="{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
-  with_items: ssh_authorized_keys
+  with_items: '{{ssh_authorized_keys}}'
 
 - meta: flush_handlers
