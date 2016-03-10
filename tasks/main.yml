@@ -14,6 +14,10 @@
     - restart ssh
   register: result
 
+## Manage client configuration
+- name: copy client configuration
+  template: src=etc_ssh_ssh__config.j2 dest=/etc/ssh/ssh_config owner=root group=root mode=0644
+
 # Setting up the ssh-agent.service below with "local_action" requires the SSH server to have already been restarted.
 - name: restart ssh
   service: name=ssh state=restarted
