@@ -27,5 +27,4 @@ galaxy_info:
     - system
     #- web
 dependencies:
-  - { role: apt }
   - { role: regional }
