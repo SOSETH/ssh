@@ -3,38 +3,63 @@
 
 ## Install ssh packages
 - name: install ssh packages
-  apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
-  with_items: '{{pkgs}}'
+  apt: 
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
+  with_items: "{{ pkgs }}"
 
 
 ## Manage host configuration
 - name: copy host configuration
-  template: src=etc_ssh_sshd__config.j2 dest=/etc/ssh/sshd_config validate='sshd -T -f %s' owner=root group=root mode=0644
+  template:
+    src: etc_ssh_sshd__config.j2
+    dest: /etc/ssh/sshd_config
+    validate: 'sshd -T -f %s'
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart ssh
   register: result
 
 ## Manage client configuration
 - name: copy client configuration
-  template: src=etc_ssh_ssh__config.j2 dest=/etc/ssh/ssh_config owner=root group=root mode=0644
-
-# Setting up the ssh-agent.service below with "local_action" requires the SSH server to have already been restarted.
-- name: restart ssh
-  service: name=ssh state=restarted
-  when: result.changed
+  template:
+    src: etc_ssh_ssh__config.j2
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: 0644
 
 ## Manage known_hosts
 - name: create /etc/ssh/known_hosts
-  file: path=/etc/ssh/known_hosts state=directory owner=root group=root mode=0755
+  file:
+    path: /etc/ssh/known_hosts
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: install system-wide known_hosts2
-  template: src=known_hosts/known__hosts2.j2 dest=/etc/ssh/known_hosts/known_hosts2 owner=root group=root mode=0444
+  template:
+    src: known_hosts/known__hosts2.j2
+    dest: /etc/ssh/known_hosts/known_hosts2
+    owner: root
+    group: root
+    mode: 0444
 
-- stat: path=/etc/ssh/known_hosts/known_hosts
+- stat:
+    path: /etc/ssh/known_hosts/known_hosts
   register: known_hosts
 
 - name: set permissions of system-wide known_hosts
-  file: dest=/etc/ssh/known_hosts/known_hosts owner=root group=root mode=0644
+  file:
+    dest: /etc/ssh/known_hosts/known_hosts
+    owner: root
+    group: root
+    mode: 0644
   when: known_hosts.stat.exists
 
 # TODO: manage per-user known_hosts files
@@ -42,7 +67,9 @@
 
 ## Manage authorized_keys
 - name: add authorized keys
-  authorized_key: user="root" key="{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
-  with_items: '{{ssh_authorized_keys}}'
+  authorized_key:
+    user: "root"
+    key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
+  with_items: "{{ ssh_authorized_keys }}"
 
 - meta: flush_handlers
