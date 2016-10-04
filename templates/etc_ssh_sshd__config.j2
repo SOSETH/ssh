@@ -39,7 +39,8 @@ MaxStartups 10:30:100
 MaxAuthTries 6
 LoginGraceTime 30
 # Usually used to configure multi-factor authentication, AuthenticationMethods can also be used to restrict the available methods to just the specified list. The elements on the list still have to be enabled with their own respective option, so, for "publickey" the option "PubkeyAuthentication" has to be "yes".
-AuthenticationMethods publickey
+AuthenticationMethods {{ ssh_auth_methods|join(' ')}}
+
 PermitRootLogin without-password
 StrictModes yes
 
@@ -49,11 +50,11 @@ StrictModes yes
 DebianBanner yes
 
 ## Password
-PasswordAuthentication no
+PasswordAuthentication {{ ('password' in ssh_auth_methods) | ternary('yes','no') }}
 PermitEmptyPasswords no
 
 ## Keys
-PubkeyAuthentication yes
+PubkeyAuthentication {{ ('publickey' in ssh_auth_methods) | ternary('yes','no') }}
 #AuthorizedKeysCommand
 #AuthorizedKeysCommandUser
 AuthorizedKeysFile /etc/ssh/authorized_keys/authorized_keys /etc/ssh/authorized_keys/authorized_keys2 %h/.ssh/authorized_keys %h/.ssh/authorized_keys2 %h/.ssh/authorized_alien_keys

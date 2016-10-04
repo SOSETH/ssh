@@ -10,6 +10,11 @@
     cache_valid_time: 1800
   with_items: "{{ pkgs }}"
 
+- set_fact:
+    ssh_auth_methods:
+      - publickey
+      - password
+  when: "'ldap_auth' in role_names"
 
 ## Manage host configuration
 - name: copy host configuration
