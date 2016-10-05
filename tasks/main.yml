@@ -14,7 +14,7 @@
     ssh_auth_methods:
       - publickey
       - password
-  when: "'ldap_auth' in role_names"
+  when: "'ldap-auth' in group_names"
 
 ## Manage host configuration
 - name: copy host configuration
