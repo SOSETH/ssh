@@ -47,7 +47,9 @@ StrictModes yes
 ## Messages
 #VersionAddendum
 #Banner /etc/issue.net
+{% if ansible_distribution == "Debian" %}
 DebianBanner yes
+{% endif %}
 
 ## Password
 PasswordAuthentication {{ ('password' in ssh_auth_methods) | ternary('yes','no') }}
