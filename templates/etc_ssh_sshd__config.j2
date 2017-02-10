@@ -143,4 +143,8 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-
 RekeyLimit default 6h
 
 # Misc
+{% if ansible_distribution == "Debian" %}
 Subsystem sftp /usr/lib/openssh/sftp-server
+{% elif ansible_distribution == "Fedora" %}
+Subsystem sftp /usr/libexec/openssh/sftp-server
+{% endif %}

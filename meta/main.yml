@@ -5,7 +5,7 @@ galaxy_info:
   company: SOSETH
   # issue_tracker_url: 
   license: GNU General Public License, version 3 (GPL-3.0)
-  min_ansible_version: 1.9.1
+  min_ansible_version: 2.0
   platforms:
     - name: Debian
       versions:
