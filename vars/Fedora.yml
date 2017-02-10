@@ -1,0 +1,9 @@
+# Fedora specific variables
+
+# Packages to be installed
+pkgs:
+  - openssh-server
+  - openssh-clients
+  - coreutils
+  - fuse-sshfs
+                    

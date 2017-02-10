@@ -1,0 +1,8 @@
+# Debian specific variables
+
+# Packages to be installed
+pkgs:
+  - openssh-server
+  - openssh-client
+  - coreutils
+  - sshfs

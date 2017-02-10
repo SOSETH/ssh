@@ -13,9 +13,5 @@ ssh_user_key_loc: '{{ config_repo_path }}/ssh-public-keys'
 ssh_auth_methods:
   - publickey
 
-# List of ssh packages that should be installed.
-pkgs:
-  - openssh-server
-  - openssh-client
-  - coreutils
-  - sshfs
+# List of ssh packages that should be installed (see vars/ for distribution specific variables).
+pkgs: []
