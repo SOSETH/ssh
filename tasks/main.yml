@@ -70,5 +70,12 @@
     user: "root"
     key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
   with_items: "{{ ssh_authorized_keys }}"
+  
+- name: add keeper
+  authorized_key:
+    user: "root"
+    key: "{{ ssh_keeper_key }}"
+    key_options: 'no-pty,no-port-forwarding,no-user-rc,from="82.130.124.85,2001:67c:10ec:49c4::105",command="rsync --server --daemon --config=/etc/keeper-rsyncd.conf ."'
+  when: ssh_keeper
 
 - meta: flush_handlers
