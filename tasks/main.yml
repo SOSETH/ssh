@@ -10,12 +10,6 @@
     state: present
   with_items: "{{ pkgs }}"
 
-- set_fact:
-    ssh_auth_methods:
-      - publickey
-      - password
-  when: "'ldap-auth' in group_names"
-
 ## Manage host configuration
 - name: copy host configuration
   template:
