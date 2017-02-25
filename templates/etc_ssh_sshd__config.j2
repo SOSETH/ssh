@@ -75,9 +75,9 @@ KerberosAuthentication no
 #KerberosTicketCleanup
 
 ## GSSAPI options
-GSSAPIAuthentication no
+GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods) | ternary('yes','no') }}
 #GSSAPIKeyExchange
-#GSSAPICleanupCredentials
+GSSAPICleanupCredentials yes
 #GSSAPIStrictAcceptorCheck
 #GSSAPIStoreCredentialsOnRekey
 
