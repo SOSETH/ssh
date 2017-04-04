@@ -13,6 +13,8 @@ ssh_user_key_loc: '{{ config_repo_path }}/ssh-public-keys'
 ssh_auth_methods:
   - publickey
 
+ssh_publickey_sssd: False
+
 # List of ssh packages that should be installed (see vars/ for distribution specific variables).
 pkgs: []
 

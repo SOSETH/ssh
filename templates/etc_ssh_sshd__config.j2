@@ -46,9 +46,11 @@ PermitEmptyPasswords no
 
 ## Keys
 PubkeyAuthentication {{ ('publickey' in ssh_auth_methods) | ternary('yes','no') }}
-#AuthorizedKeysCommand
-#AuthorizedKeysCommandUser
-AuthorizedKeysFile /etc/ssh/authorized_keys/authorized_keys /etc/ssh/authorized_keys/authorized_keys2 %h/.ssh/authorized_keys %h/.ssh/authorized_keys2 %h/.ssh/authorized_alien_keys
+{% if ssh_publickey_sssd %}
+AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
+AuthorizedKeysCommandUser nobody
+{% endif %}
+AuthorizedKeysFile /etc/ssh/authorized_keys/authorized_keys %h/.ssh/authorized_keys
 #AuthorizedPrincipalsFile
 #RevokedKeys
 #HostKeyAgent
