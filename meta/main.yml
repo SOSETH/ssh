@@ -10,7 +10,10 @@ galaxy_info:
     - name: Debian
       versions:
         - jessie
-        # - wheezy
+        - stretch
+    - name: Fedora
+      versions:
+        - 25
   categories:
     #- cloud
     #- cloud:ec2
