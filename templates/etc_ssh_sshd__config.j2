@@ -1,16 +1,5 @@
 # Managed with Ansible
 
-# Meta
-
-# Protocol
-Protocol 2
-
-## Protocol Version 1 only options
-#KeyRegenerationInterval
-#RhostsRSAAuthentication
-#RSAAuthentication
-#ServerKeyBits
-
 # Network
 AddressFamily any
 Port {{ ansible_port | default(22,boolean=True) }}
@@ -89,9 +78,6 @@ HostbasedAuthentication no
 
 ## PAM
 UsePAM yes
-
-## Login
-UseLogin no
 
 ## User
 #DenyUsers
