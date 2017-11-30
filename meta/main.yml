@@ -29,5 +29,4 @@ galaxy_info:
     #- packaging
     - system
     #- web
-dependencies:
-  - { role: regional }
+dependencies: []
