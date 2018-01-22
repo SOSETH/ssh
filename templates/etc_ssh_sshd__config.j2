@@ -136,3 +136,7 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 {% elif ansible_distribution == "Fedora" %}
 Subsystem sftp /usr/libexec/openssh/sftp-server
 {% endif %}
+{% if inventory_hostname in groups.get("compute", []) %}
+
+Acceptenv LANG LC_*
+{% endif %}
