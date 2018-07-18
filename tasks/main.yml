@@ -77,5 +77,14 @@
     user: "root"
     key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
   with_items: "{{ ssh_authorized_keys }}"
+  when: inventory_hostname not in groups['compute']
+
+- name: add authorized keys (compute)
+  become: True
+  authorized_key:
+    user: "root"
+    key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
+  with_items: "{{ ssh_authorized_keys }}"
+  when: inventory_hostname == groups['compute'][0]
   
 - meta: flush_handlers
