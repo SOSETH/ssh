@@ -125,9 +125,18 @@ X11Forwarding no
 #XAuthLocation
 
 # Crypto, according to https://wiki.mozilla.org/Security/Guidelines/OpenSSH
+{% if sshv.stdout is version('6.7', '>=') %}
+# Modern
 KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+{% else %}
+# Legacy
+KexAlgorithms diffie-hellman-group-exchange-sha256
+MACs hmac-sha2-512,hmac-sha2-256
+Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+{% endif %}
+
 RekeyLimit default 6h
 
 # Misc
@@ -136,7 +145,5 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 {% elif ansible_distribution == "Fedora" %}
 Subsystem sftp /usr/libexec/openssh/sftp-server
 {% endif %}
-{% if inventory_hostname in groups.get("compute", []) %}
 
-Acceptenv LANG LC_*
-{% endif %}
+Acceptenv {{ sshd_acceptable_environment_variables|join(' ') }}

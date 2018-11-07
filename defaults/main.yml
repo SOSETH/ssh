@@ -18,3 +18,16 @@ ssh_publickey_sssd: False
 # List of ssh packages that should be installed (see vars/ for distribution specific variables).
 pkgs: []
 
+# Whether to use only modern ciphers on new clients (might impact connections
+# to old servers)
+ssh_strict_client: False
+
+sshd_acceptable_environment_variables:
+  - LANG
+  - LC_*
+
+ssh_environment_variables_to_send:
+  - LANG
+  - LC_*
+
+ssh_deploy_root_authorized_keys: True
