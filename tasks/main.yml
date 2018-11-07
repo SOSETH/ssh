@@ -69,4 +69,9 @@
       append: yes
     with_items: "{{ sshd_allowd_users }}"
 
+  - name: Configure additional users
+    when: sshd_additional_user_cfg != []
+    include_tasks: userconfig.yml
+    with_items: "{{ sshd_additional_user_cfg }}"
+
   - meta: flush_handlers

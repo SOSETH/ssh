@@ -1,0 +1,20 @@
+---
+  - name: "Add authorized keys for user {{ item.name }}"
+    become: True
+    when: item.authorized_keys is defined
+    loop_control:
+      loop_var: item2
+    authorized_key:
+      user: "{{ item.name }}"
+      key: "{{ lookup('file', ssh_user_key_loc + '/' + item2 + '.pub') }}"
+    with_items: "{{ item.authorized_keys }}"
+
+  - name: Deploy .k5login for root
+    become: True
+    when: item.k5login is defined
+    template:
+      src: k5login-user.j2
+      dest: "/home/{{ item.name }}/.k5login"
+      owner: "{{ item.name }}"
+      group: root
+      mode: 0640

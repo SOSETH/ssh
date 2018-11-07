@@ -22,3 +22,4 @@ recommendations of [Mozilla](https://infosec.mozilla.org/guidelines/openssh.html
 | `sshd_restriction_group` | `sshusers` | Name of the ssh restriction group |
 | `sshd_allowd_users` | `["root"]` | User to add to ssh restriction group |
 | `sshd_permit_root_login` | `without-password` | Whether to permit root login |
+| `sshd_additional_user_cfg` | `[]` | Besides root, additionally deploy keys or kerberos principals for these users. Have a look at (defaults/main.yml) for formatting |
