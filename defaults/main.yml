@@ -22,12 +22,22 @@ pkgs: []
 # to old servers)
 ssh_strict_client: False
 
+# Environment variables to accept over SSH
 sshd_acceptable_environment_variables:
   - LANG
   - LC_*
 
+# Environment variables to send over SSH
 ssh_environment_variables_to_send:
   - LANG
   - LC_*
 
+# Whether to deploy root's authorized key file (useful for e.g. proxmox)
 ssh_deploy_root_authorized_keys: True
+
+# Whether to use DNS to reverse-lookup incoming connections
+sshd_use_dns: "no"
+
+# Kerberos principals to allow to sign in as root. This simply adds them to
+# root's .k5login file
+sshd_principals_for_root: []

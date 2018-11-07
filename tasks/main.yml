@@ -1,10 +1,8 @@
 ---
-# Install and configure OpenSSH server and client
-
+# Load distribution-specific config
 - include_vars: "{{ ansible_distribution }}.yml"
 
-## Install ssh packages
-- name: install ssh packages
+- name: Install ssh packages
   become: True
   package:
     name: "{{ item }}"
@@ -16,8 +14,7 @@
   register: sshv
   changed_when: False
 
-## Manage host configuration
-- name: copy host configuration
+- name: Copy host configuration
   become: True
   template:
     src: etc_ssh_sshd__config.j2
@@ -30,8 +27,7 @@
     - restart ssh
   register: result
 
-## Manage client configuration
-- name: copy client configuration
+- name: Copy client configuration
   become: True
   template:
     src: etc_ssh_ssh__config.j2
@@ -40,13 +36,22 @@
     group: root
     mode: 0644
 
-## Manage authorized_keys
-- name: add authorized keys
+- name: Add authorized keys
   become: True
   authorized_key:
     user: "root"
     key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
   with_items: "{{ ssh_authorized_keys }}"
   when: ssh_deploy_root_authorized_keys
+
+- name: Deploy .k5login for root
+  become: True
+  when: sshd_principals_for_root != []
+  template:
+    src: k5login.j2
+    dest: /root/.k5login
+    owner: root
+    group: root
+    mode: 0640
 
 - meta: flush_handlers
