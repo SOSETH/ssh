@@ -67,7 +67,7 @@
       name: "{{ item }}"
       groups: "{{ sshd_restriction_group }}"
       append: yes
-    with_items: "{{ sshd_allowd_users }}"
+    with_items: "{{ sshd_allowed_users }}"
 
   - name: Configure additional users
     when: sshd_additional_user_cfg != []

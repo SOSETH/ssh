@@ -50,7 +50,7 @@ sshd_restrict_users: False
 sshd_manage_restriction_group: True
 
 # Which users to allow if login is restricted
-sshd_allowd_users:
+sshd_allowed_users:
   - root
 
 # If login restrictions are enabled, how shall the group be called?
