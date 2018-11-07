@@ -24,14 +24,16 @@ SyslogFacility AUTH
 LogLevel INFO
 
 # Authentication
+{% if sshv.stdout is version('7.5', '<') %}
 UsePrivilegeSeparation sandbox
+{% endif %}
 MaxStartups 10:30:100
 MaxAuthTries 6
 LoginGraceTime 30
 # Usually used to configure multi-factor authentication, AuthenticationMethods can also be used to restrict the available methods to just the specified list. The elements on the list still have to be enabled with their own respective option, so, for "publickey" the option "PubkeyAuthentication" has to be "yes".
 AuthenticationMethods {{ ssh_auth_methods|join(' ')}}
 
-PermitRootLogin without-password
+PermitRootLogin {{ sshd_permit_root_login }}
 StrictModes yes
 
 ## Messages
@@ -86,7 +88,9 @@ UsePAM yes
 #DenyUsers
 #AllowUsers
 #DenyGroups
-#AllowGroups
+{% if sshd_restrict_users %}
+AllowGroups {{ sshd_restriction_group }}
+{% endif %}
 
 # After authentication
 #ChrootDirectory
@@ -98,7 +102,6 @@ PrintLastLog yes
 
 ## Environment
 PermitUserEnvironment no
-AcceptEnv LANG LC_*
 
 # Session features
 AllowAgentForwarding yes
@@ -147,4 +150,4 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 Subsystem sftp /usr/libexec/openssh/sftp-server
 {% endif %}
 
-Acceptenv {{ sshd_acceptable_environment_variables|join(' ') }}
+AcceptEnv {{ sshd_acceptable_environment_variables|join(' ') }}

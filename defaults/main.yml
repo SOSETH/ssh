@@ -41,3 +41,20 @@ sshd_use_dns: "no"
 # Kerberos principals to allow to sign in as root. This simply adds them to
 # root's .k5login file
 sshd_principals_for_root: []
+
+# Whether to restrict ssh login to a specific set of users
+sshd_restrict_users: False
+
+# Whether to apply any of the restrictions using this role. Disable this if
+# you e.g. use a group from LDAP
+sshd_manage_restriction_group: True
+
+# Which users to allow if login is restricted
+sshd_allowd_users:
+  - root
+
+# If login restrictions are enabled, how shall the group be called?
+sshd_restriction_group: sshusers
+
+# Whether to allow root login
+sshd_permit_root_login: "without-password"

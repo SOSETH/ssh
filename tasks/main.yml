@@ -53,4 +53,20 @@
       group: root
       mode: 0640
 
+  - name: Create SSH signon restriction group
+    when: sshd_restrict_users and sshd_manage_restriction_group
+    become: True
+    group:
+      name: "{{ sshd_restriction_group }}"
+      system: yes
+
+  - name: Add users to SSH signon restriction group
+    when: sshd_restrict_users and sshd_manage_restriction_group
+    become: True
+    user:
+      name: "{{ item }}"
+      groups: "{{ sshd_restriction_group }}"
+      append: yes
+    with_items: "{{ sshd_allowd_users }}"
+
   - meta: flush_handlers

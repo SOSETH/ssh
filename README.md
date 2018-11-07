@@ -17,3 +17,8 @@ recommendations of [Mozilla](https://infosec.mozilla.org/guidelines/openssh.html
 | `ssh_deploy_root_authorized_keys` | `True` | Whether to deploy root's authorized keys. This is useful on, say, proxmox hosts where the file is automatically shared |
 | `sshd_use_dns` | `no` | Whether to enable reverse DNS lookup for clients
 | `sshd_principals_for_root` | `[]` | A list of principals to allow to ssh as root. Only useful for Kerberos |
+| `sshd_restrict_users` | `False` | Whether to restrict ssh logins to members of a certain group |
+| `sshd_manage_restriction_group` | `True` | Whether to actively manage the ssh restriction group (disable if it is in e.g. LDAP) |
+| `sshd_restriction_group` | `sshusers` | Name of the ssh restriction group |
+| `sshd_allowd_users` | `["root"]` | User to add to ssh restriction group |
+| `sshd_permit_root_login` | `without-password` | Whether to permit root login |
