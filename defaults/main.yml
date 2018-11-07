@@ -66,3 +66,9 @@ sshd_additional_user_cfg: []
 #      - card
 #    k5login:
 #      - maxf@EXAMPLE.ORG
+
+# Replace the distribution-provided moduli with custom ones
+sshd_replace_moduli: False
+
+# If we're to replace the moduli, how are they named in the current playbook?
+sshd_moduli_name: "ssh.moduli"

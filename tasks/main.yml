@@ -74,4 +74,15 @@
     include_tasks: userconfig.yml
     with_items: "{{ sshd_additional_user_cfg }}"
 
+  - name: Replace moduli
+    when: sshd_replace_moduli
+    become: True
+    copy:
+      dest: "/etc/ssh/moduli"
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ lookup('file', sshd_moduli_name) }}"
+    notify: restart ssh
+
   - meta: flush_handlers

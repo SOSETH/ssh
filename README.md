@@ -3,6 +3,16 @@
 Configuration of OpenSSH for SOSETH server use. This role uses the security
 recommendations of [Mozilla](https://infosec.mozilla.org/guidelines/openssh.html).
 
+## Intro
+This role will apply standard ssh hardening procedures to both server and client
+configuration. Additionally, by default, root logins are restricted to
+passwordless login only.
+You can then, among other things:
+ * roll out keys using `ssh_authorized_keys`
+ * enable Kerberos (GSSAPI) by adding it to `ssh_auth_methods`
+ * restrict users that are allowed to use sshd using `sshd_restrict_users`
+ * roll out keys or kerberos principals for users other than root using `sshd_additional_user_cfg`
+
 ## Configuration
 | Name | Default value | Description |
 | ---- | ------------- | ----------- |
@@ -23,3 +33,8 @@ recommendations of [Mozilla](https://infosec.mozilla.org/guidelines/openssh.html
 | `sshd_allowd_users` | `["root"]` | User to add to ssh restriction group |
 | `sshd_permit_root_login` | `without-password` | Whether to permit root login |
 | `sshd_additional_user_cfg` | `[]` | Besides root, additionally deploy keys or kerberos principals for these users. Have a look at (defaults/main.yml) for formatting |
+| `sshd_replace_moduli` | `False` | Whether to replace `/etc/ssh/moduli` with user-provided values |
+| `sshd_moduli_name` | `ssh.moduli` | File in playbook that contains the moduli |
+
+## License
+GPLv3
