@@ -4,8 +4,9 @@
 # Network
 AddressFamily any
 Port {{ ansible_port | default(22,boolean=True) }}
-ListenAddress ::
-ListenAddress 0.0.0.0
+{% for item in sshd_listen_address %}
+ListenAddress {{ item }}
+{% endfor %}
 TCPKeepAlive yes
 #IPQoS
 

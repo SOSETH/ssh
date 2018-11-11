@@ -72,3 +72,8 @@ sshd_replace_moduli: False
 
 # If we're to replace the moduli, how are they named in the current playbook?
 sshd_moduli_name: "ssh.moduli"
+
+# Where to listen on. You'll seldom need to change this
+sshd_listen_address:
+  - '::'
+  - 0.0.0.0

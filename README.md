@@ -35,6 +35,7 @@ You can then, among other things:
 | `sshd_additional_user_cfg` | `[]` | Besides root, additionally deploy keys or kerberos principals for these users. Have a look at (defaults/main.yml) for formatting |
 | `sshd_replace_moduli` | `False` | Whether to replace `/etc/ssh/moduli` with user-provided values |
 | `sshd_moduli_name` | `ssh.moduli` | File in playbook that contains the moduli |
+| `sshd_listen_address` | (see defaults/main.yml) | Which addresses to bind to |
 
 ## License
 GPLv3
