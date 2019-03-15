@@ -18,6 +18,9 @@ You can then, among other things:
 | ---- | ------------- | ----------- |
 | `ssh_user_key_loc` | `{{ config_repo_path }}/ssh-public-keys` | Location of user keys in this repository |
 | `ssh_authorized_keys` | `[]` | Which of the above keys should we put into root's authorized_keys? |
+| `ssh_manage_root_keys_exclusively` | `True` | Manage root's authorized_keys exclusiveley by this role? |
+| `ssh_deploy_root_keys_in_etc` | `False` | Deploy root's authorized keys in /etc/ssh? |
+| `ssh_deploy_recovery_key` | `False` | Deploy the recovery key? |
 | `ssh_allow_x11_fwd` | `false` | Whether to allow X11 forwarding |
 | `ssh_auth_methods` | (see defaults/main.yml) | Which authentication methods to allow. By default, only pubkey is enabled, Kerberos is optionally supported |
 | `ssh_publickey_sssd` | `False` | Whether to use sssd to get user's keys |
@@ -37,5 +40,16 @@ You can then, among other things:
 | `sshd_moduli_name` | `ssh.moduli` | File in playbook that contains the moduli |
 | `sshd_listen_address` | (see defaults/main.yml) | Which addresses to bind to |
 
+## Notes
+To avoid interference with software (Proxmox, PMG) also editing the `.ssh/authorized_keys` file
+this role deploys keys at `/etc/ssh/authorized_keys/%u` if `ssh_deploy_root_keys_in_etc` is set.
+
+In particular these are following files:
+  * `authorized_keys`: normal user public keys with access to the host
+  * `recovery`: special recovery key in case the IAM (FreeIPA) fails. To deploy set `ssh_deploy_recovery_key` to True.
+
+The `backup` key configured in the `sshd_config` is deployed by the **backup_client** role.
+
 ## License
 GPLv3
+

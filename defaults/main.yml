@@ -2,6 +2,12 @@
 # The comprehensive list of public user key files used to make up the authorized_keys file on the target. The filenames given here will be appended the suffix ".pub".
 ssh_authorized_keys: []
 
+# If set to True all keys which aren't listed in `ssh_authorized_keys` are deleted on the next run.
+ssh_manage_root_keys_exclusively: True
+
+# Keys are deployed in /etc/ssh/authorized_keys/root/authorized_keys to avoid interference with software that manages ~/.ssh/authorized_keys as well
+ssh_deploy_root_keys_in_etc: False
+
 # If set to true, the SSH server on target will allow X11 forwarding.
 ssh_allow_x11_fwd: false
 
@@ -14,6 +20,9 @@ ssh_auth_methods:
   - publickey
 
 ssh_publickey_sssd: False
+
+# Deploy the special recovery key (recovery.pub) to all hosts (useful if the IAM fails)
+ssh_deploy_recovery_key: False
 
 # List of ssh packages that should be installed (see vars/ for distribution specific variables).
 pkgs: []
@@ -64,6 +73,9 @@ sshd_additional_user_cfg: []
 #  - name: maxf
 #    authorized_keys:
 #      - card
+#    exclusive: False
+#    deploy_in_etc: False
+#    key_path: ""
 #    k5login:
 #      - maxf@EXAMPLE.ORG
 

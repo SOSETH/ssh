@@ -54,7 +54,7 @@ PubkeyAuthentication {{ ('publickey' in ssh_auth_methods) | ternary('yes','no') 
 AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
 AuthorizedKeysCommandUser nobody
 {% endif %}
-AuthorizedKeysFile /etc/ssh/authorized_keys/authorized_keys %h/.ssh/authorized_keys
+AuthorizedKeysFile /etc/ssh/authorized_keys/%u/backup /etc/ssh/authorized_keys/%u/recovery /etc/ssh/authorized_keys/%u/authorized_keys %h/.ssh/authorized_keys
 #AuthorizedPrincipalsFile
 #RevokedKeys
 #HostKeyAgent
