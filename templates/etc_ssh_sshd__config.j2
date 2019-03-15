@@ -145,7 +145,7 @@ Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 RekeyLimit default 6h
 
 # Misc
-{% if ansible_distribution == "Debian" %}
+{% if ansible_distribution == "Debian" or ansible_distribution == "Ubuntu" %}
 Subsystem sftp /usr/lib/openssh/sftp-server
 {% elif ansible_distribution == "Fedora" %}
 Subsystem sftp /usr/libexec/openssh/sftp-server
