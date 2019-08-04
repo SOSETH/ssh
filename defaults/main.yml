@@ -77,3 +77,6 @@ sshd_moduli_name: "ssh.moduli"
 sshd_listen_address:
   - '::'
   - 0.0.0.0
+
+# Whether to install mosh
+ssh_install_mosh: False

@@ -8,6 +8,13 @@
       name: "{{ pkgs }}"
       state: present
 
+  - name: Install ssh packages
+    when: ssh_install_mosh
+    become: True
+    package:
+      name: mosh
+      state: present
+
   - name: Load OpenSSH version
     shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
     register: sshv
