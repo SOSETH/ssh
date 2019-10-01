@@ -1,57 +1,56 @@
 ---
-# Load distribution-specific config
-- include_vars: "{{ ansible_distribution }}.yml"
+  # Load distribution-specific config
+  - include_vars: "{{ ansible_distribution }}.yml"
 
-- name: Install ssh packages
-  become: True
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ pkgs }}"
+  - name: Install ssh packages
+    become: True
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items: "{{ pkgs }}"
 
-- name: Load OpenSSH version
-  shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
-  register: sshv
-  changed_when: False
+  - name: Load OpenSSH version
+    shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
+    register: sshv
+    changed_when: False
 
-- name: Copy host configuration
-  become: True
-  template:
-    src: etc_ssh_sshd__config.j2
-    dest: /etc/ssh/sshd_config
-    validate: 'sshd -T -f %s'
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - restart ssh
-  register: result
+  - name: Copy host configuration
+    become: True
+    template:
+      src: etc_ssh_sshd__config.j2
+      dest: /etc/ssh/sshd_config
+      validate: 'sshd -T -f %s'
+      owner: root
+      group: root
+      mode: 0644
+    notify: restart ssh
+    register: result
 
-- name: Copy client configuration
-  become: True
-  template:
-    src: etc_ssh_ssh__config.j2
-    dest: /etc/ssh/ssh_config
-    owner: root
-    group: root
-    mode: 0644
+  - name: Copy client configuration
+    become: True
+    template:
+      src: etc_ssh_ssh__config.j2
+      dest: /etc/ssh/ssh_config
+      owner: root
+      group: root
+      mode: 0644
 
-- name: Add authorized keys
-  become: True
-  authorized_key:
-    user: "root"
-    key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
-  with_items: "{{ ssh_authorized_keys }}"
-  when: ssh_deploy_root_authorized_keys
+  - name: Add authorized keys
+    become: True
+    authorized_key:
+      user: "root"
+      key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
+    with_items: "{{ ssh_authorized_keys }}"
+    when: ssh_deploy_root_authorized_keys
 
-- name: Deploy .k5login for root
-  become: True
-  when: sshd_principals_for_root != []
-  template:
-    src: k5login.j2
-    dest: /root/.k5login
-    owner: root
-    group: root
-    mode: 0640
+  - name: Deploy .k5login for root
+    become: True
+    when: sshd_principals_for_root != []
+    template:
+      src: k5login.j2
+      dest: /root/.k5login
+      owner: root
+      group: root
+      mode: 0640
 
-- meta: flush_handlers
+  - meta: flush_handlers

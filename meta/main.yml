@@ -1,32 +1,26 @@
 ---
 galaxy_info:
   author: Damiano Boppart, Philip Stark
-  description: See tasks/main.yml
+  description: Configure OpenSSH's server and client
   company: SOSETH
-  # issue_tracker_url: 
+  issue_tracker_url: https://github.com/SOSETH/ssh/issues
+  min_ansible_version: 2.6
   license: GNU General Public License, version 3 (GPL-3.0)
-  min_ansible_version: 2.0
   platforms:
     - name: Debian
       versions:
         - jessie
         - stretch
+    - name: Ubuntu
+      versions:
+       - trusty
+       - xenial
+       - bionic
     - name: Fedora
       versions:
         - 25
-  categories:
-    #- cloud
-    #- cloud:ec2
-    #- cloud:gce
-    #- cloud:rax
-    #- clustering
-    #- database
-    #- database:nosql
-    #- database:sql
-    #- development
-    #- monitoring
-    #- networking
-    #- packaging
+  galaxy_tags:
     - system
-    #- web
-dependencies: []
+    - security
+    - ssh
+    - kerberos

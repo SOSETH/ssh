@@ -6,4 +6,3 @@ pkgs:
   - openssh-clients
   - coreutils
   - fuse-sshfs
-                    
