@@ -45,7 +45,7 @@ ssh_environment_variables_to_send:
 ssh_deploy_root_authorized_keys: True
 
 # Whether to use DNS to reverse-lookup incoming connections
-sshd_use_dns: "no"
+sshd_use_dns: False
 
 # Kerberos principals to allow to sign in as root. This simply adds them to
 # root's .k5login file
