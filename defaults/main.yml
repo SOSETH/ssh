@@ -66,7 +66,7 @@ sshd_allowed_users:
 sshd_restriction_group: sshusers
 
 # Whether to allow root login
-sshd_permit_root_login: "without-password"
+sshd_permit_root_login: "prohibit-password"
 
 # Besides root, deploy pubkey/krb5login for these users:
 sshd_additional_user_cfg: []
