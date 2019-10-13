@@ -33,7 +33,7 @@ You can then, among other things:
 | `sshd_restrict_users` | `False` | Whether to restrict ssh logins to members of a certain group |
 | `sshd_manage_restriction_group` | `True` | Whether to actively manage the ssh restriction group (disable if it is in e.g. LDAP) |
 | `sshd_restriction_group` | `sshusers` | Name of the ssh restriction group |
-| `sshd_allowd_users` | `["root"]` | User to add to ssh restriction group |
+| `sshd_allowed_users` | `["root"]` | User to add to ssh restriction group |
 | `sshd_permit_root_login` | `prohibit-password` | Whether to permit root login |
 | `sshd_additional_user_cfg` | `[]` | Besides root, additionally deploy keys or kerberos principals for these users. Have a look at (defaults/main.yml) for formatting |
 | `sshd_replace_moduli` | `False` | Whether to replace `/etc/ssh/moduli` with user-provided values |
