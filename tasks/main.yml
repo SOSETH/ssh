@@ -42,13 +42,27 @@
       group: root
       mode: 0644
 
-  - name: Add authorized keys
-    become: True
-    authorized_key:
-      user: "root"
-      key: "{{ lookup('file', ssh_user_key_loc + '/' + item + '.pub') }}"
-    with_items: "{{ ssh_authorized_keys }}"
-    when: ssh_deploy_root_authorized_keys
+  - name: Configure authorized keys of root
+    include_tasks: userconfig.yml
+    with_items:
+      - name: root
+        authorized_keys: "{{ ssh_authorized_keys }}"
+        exclusive: "{{ ssh_manage_root_keys_exclusively }}"
+        deploy_in_etc: "{{ ssh_deploy_root_keys_in_etc }}"
+
+  - name: Add recovery key
+    include_tasks: userconfig.yml
+    with_items:
+      - name: root
+        authorized_keys: recovery
+        key_path: "/etc/ssh/authorized_keys/root/recovery"
+        exclusive: True
+    when: ssh_deploy_recovery_key
+
+  - name: Configure additional users
+    when: sshd_additional_user_cfg != []
+    include_tasks: userconfig.yml
+    with_items: "{{ sshd_additional_user_cfg }}"
 
   - name: Deploy .k5login for root
     become: True
@@ -75,11 +89,6 @@
       groups: "{{ sshd_restriction_group }}"
       append: yes
     with_items: "{{ sshd_allowed_users }}"
-
-  - name: Configure additional users
-    when: sshd_additional_user_cfg != []
-    include_tasks: userconfig.yml
-    with_items: "{{ sshd_additional_user_cfg }}"
 
   - name: Replace moduli
     when: sshd_replace_moduli
