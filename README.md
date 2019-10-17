@@ -18,7 +18,7 @@ You can then, among other things:
 | ---- | ------------- | ----------- |
 | `ssh_user_key_loc` | `{{ config_repo_path }}/ssh-public-keys` | Location of user keys in this repository |
 | `ssh_authorized_keys` | `[]` | Which of the above keys should we put into root's authorized_keys? |
-| `ssh_manage_root_keys_exclusively` | `True` | Manage root's authorized_keys exclusiveley by this role? |
+| `ssh_manage_root_keys_exclusively` | `True` | Manage root's authorized_keys exclusively by this role? |
 | `ssh_deploy_root_keys_in_etc` | `False` | Deploy root's authorized keys in /etc/ssh? |
 | `ssh_deploy_recovery_key` | `False` | Deploy the recovery key? |
 | `ssh_allow_x11_fwd` | `False` | Whether to allow X11 forwarding |
