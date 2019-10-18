@@ -21,7 +21,7 @@
       state: directory
       owner: root
       group: root
-      mode: 0750
+      mode: 0700
     when: item.key_path is defined or (item.deploy_in_etc is defined and item.deploy_in_etc)
 
   - name: "Add authorized keys for user {{ item.name }} (exclusive mode)"
