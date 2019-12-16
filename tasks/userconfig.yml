@@ -6,11 +6,6 @@
 
   - name: Set key_path
     set_fact:
-      key_path: "~/.ssh/authorized_keys"
-    when: item.key_path is not defined
-
-  - name: Set key_path
-    set_fact:
       key_path: "/etc/ssh/authorized_keys/{{ item.name }}/authorized_keys"
     when: item.key_path is not defined and item.deploy_in_etc is defined and item.deploy_in_etc
 
@@ -43,7 +38,7 @@
         authorized_key:
           user: "{{ item.name}}"
           key: "{{ ssh_pubkeys_string }}"
-          path: "{{ key_path }}"
+          path: "{{ omit if key_path is undefined else key_path }}"
           exclusive: True
     when: item.authorized_keys is defined and item.exclusive is defined and item.exclusive
 
@@ -52,7 +47,7 @@
     authorized_key:
       user: "{{ item.name }}"
       key: "{{ lookup('file', ssh_user_key_loc + '/' + item2 + '.pub') }}"
-      path: "{{ key_path }}"
+      path: "{{ omit if key_path is undefined else key_path }}"
     with_items: "{{ item.authorized_keys }}"
     loop_control:
       loop_var: item2
