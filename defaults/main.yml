@@ -41,9 +41,6 @@ ssh_environment_variables_to_send:
   - LANG
   - LC_*
 
-# Whether to deploy root's authorized key file (useful for e.g. proxmox)
-ssh_deploy_root_authorized_keys: True
-
 # Whether to use DNS to reverse-lookup incoming connections
 sshd_use_dns: False
 

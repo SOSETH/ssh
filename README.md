@@ -27,7 +27,6 @@ You can then, among other things:
 | `ssh_strict_client` | `False` | Whether to enforce strict security settings for the ssh client. Note that this might break backwards compatibility |
 | `sshd_acceptable_environment_variables` | (see defaults/main.yml) | Which environment vairables to accept via ssh |
 | `ssh_environment_variables_to_send` | (see defaults/main.yml) | Which environment variables to send via SSH |
-| `ssh_deploy_root_authorized_keys` | `True` | Whether to deploy root's authorized keys. This is useful on, say, proxmox hosts where the file is automatically shared |
 | `sshd_use_dns` | `False` | Whether to enable reverse DNS lookup for clients
 | `sshd_principals_for_root` | `[]` | A list of principals to allow to ssh as root. Only useful for Kerberos |
 | `sshd_restrict_users` | `False` | Whether to restrict ssh logins to members of a certain group |
