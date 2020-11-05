@@ -9,7 +9,7 @@
       state: present
 
   - name: Install ssh packages
-    when: ssh_install_mosh
+    when: ssh_install_mosh | bool
     become: True
     package:
       name: mosh
@@ -57,7 +57,7 @@
         authorized_keys: recovery
         key_path: "/etc/ssh/authorized_keys/root/recovery"
         exclusive: True
-    when: ssh_deploy_recovery_key
+    when: ssh_deploy_recovery_key | bool
 
   - name: Configure additional users
     when: sshd_additional_user_cfg != []
@@ -91,7 +91,7 @@
     with_items: "{{ sshd_allowed_users }}"
 
   - name: Replace moduli
-    when: sshd_replace_moduli
+    when: sshd_replace_moduli | bool
     become: True
     copy:
       dest: "/etc/ssh/moduli"
