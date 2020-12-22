@@ -42,11 +42,24 @@
       group: root
       mode: 0644
 
+  - set_fact:
+      sshd_additional_root_cfg: "{{ sshd_additional_user_cfg | selectattr('name', 'eq', 'root') | list }}"
+
+  - name: Merge ssh_authorized_keys with additional keys for root
+    set_fact:
+      sshd_root_authorized_keys: "{{ sshd_additional_root_cfg[0].authorized_keys + ssh_authorized_keys }}"
+    when: sshd_additional_root_cfg != []
+
+  - name: Use ssh_authorized_keys as sshd_root_authorized_keys
+    set_fact:
+      sshd_root_authorized_keys: "{{ ssh_authorized_keys }}"
+    when: sshd_additional_root_cfg == []
+
   - name: Configure authorized keys of root
     include_tasks: userconfig.yml
     with_items:
       - name: root
-        authorized_keys: "{{ ssh_authorized_keys }}"
+        authorized_keys: "{{ sshd_root_authorized_keys }}"
         exclusive: "{{ ssh_manage_root_keys_exclusively }}"
         deploy_in_etc: "{{ ssh_deploy_root_keys_in_etc }}"
 
@@ -62,7 +75,7 @@
   - name: Configure additional users
     when: sshd_additional_user_cfg != []
     include_tasks: userconfig.yml
-    with_items: "{{ sshd_additional_user_cfg }}"
+    with_items: "{{ sshd_additional_user_cfg | selectattr('name', 'ne', 'root') | list }}"
 
   - name: Deploy .k5login for root
     become: True
