@@ -114,4 +114,26 @@
       content: "{{ lookup('file', sshd_moduli_name) }}"
     notify: restart ssh
 
+  - name: Install restricted-ssh-commands
+    when: sshd_restricted_commands is defined
+    become: True
+    apt:
+      name: restricted-ssh-commands
+      state: present
+
+  - name: Ensure restricted-ssh-commands directory exists
+    when: sshd_restricted_commands is defined
+    become: True
+    file:
+      path: "/etc/restricted-ssh-commands"
+      state: directory
+
+  - name: Write restricted-ssh-commands configs
+    become: True
+    when: sshd_restricted_commands is defined
+    template:
+      src: restricted-ssh-commands.j2
+      dest: "/etc/restricted-ssh-commands/{{ item.user }}"
+    loop: "{{ sshd_restricted_commands }}"
+
   - meta: flush_handlers

@@ -32,6 +32,7 @@ You can then, among other things:
 | `sshd_restrict_users` | `False` | Whether to restrict ssh logins to members of a certain group |
 | `sshd_manage_restriction_group` | `True` | Whether to actively manage the ssh restriction group (disable if it is in e.g. LDAP) |
 | `sshd_restriction_group` | `sshusers` | Name of the ssh restriction group |
+| `sshd_restricted_commands` | undefined | Restrict commands for certain user+key combinations (see restricted-ssh-commands section and defaults/main.yml |
 | `sshd_allowed_users` | `["root"]` | User to add to ssh restriction group |
 | `sshd_permit_root_login` | `prohibit-password` | Whether to permit root login |
 | `sshd_additional_user_cfg` | `[]` | Besides root, additionally deploy keys or kerberos principals for these users. Have a look at (defaults/main.yml) for formatting |
@@ -48,6 +49,18 @@ In particular these are following files:
   * `recovery`: special recovery key in case the IAM (FreeIPA) fails. To deploy set `ssh_deploy_recovery_key` to True.
 
 The `backup` key configured in the `sshd_config` is deployed by the **backup_client** role.
+
+## Restricted-ssh-commands
+You can restrict the commands a user with a certain key can execute per user.
+This uses [restricted-ssh-commands](https://packages.debian.org/buster/restricted-ssh-commands).
+
+**Example** You have a key `key1` that is authorized to login as `root` but you
+want to only allow it to execute e. g. apt-commands.
+
+1. Add dictionairy entry in `sshd_restricted_commands` with `user: root` and
+command `commands: - "^apt"`.
+2. Prefix the ssh-key with `command="/usr/lib/restricted-ssh-commands",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty ssh-rsa [...]`
+**Only keys with that prefix will be affected by the restriction!**
 
 ## License
 GPLv3
