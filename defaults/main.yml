@@ -62,6 +62,14 @@ sshd_allowed_users:
 # If login restrictions are enabled, how shall the group be called?
 sshd_restriction_group: sshusers
 
+# Restrict the commands a SSH user can execute, see README
+# sshd_restricted_commands:
+#   - user: root
+#     commands:
+#       - "^scp -p( -d)? -t( --)? /srv/reprepro/incoming(/[-a-z0-9+~_.]*[-a-z0-9+~_])?$"
+#       - "^chmod 0644( /srv/reprepro/incoming/[-a-z0-9+~_.]*[-a-z0-9+~_])+$"
+#       - "^reprepro ( -V)? -b /srv/reprepro processincoming foobar$"
+
 # Whether to allow root login
 sshd_permit_root_login: "prohibit-password"
 
