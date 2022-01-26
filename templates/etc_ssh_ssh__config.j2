@@ -1,8 +1,6 @@
 # Managed with Ansible (role: ssh)
 # Do not edit!
 
-#	$OpenBSD: ssh_config,v 1.30 2016/02/20 23:06:23 sobrado Exp $
-
 # This is the ssh client system-wide configuration file.  See
 # ssh_config(5) for more information.  This file provides defaults for
 # users, and the values can be changed in per-user configuration files
@@ -23,16 +21,18 @@
 Host *
 #   ForwardAgent no
 #   ForwardX11 no
+#   ForwardX11Trusted yes
 #   PasswordAuthentication yes
 #   HostbasedAuthentication no
-#   GSSAPIAuthentication no
+    GSSAPIAuthentication yes
 #   GSSAPIDelegateCredentials no
+#   GSSAPIKeyExchange no
+#   GSSAPITrustDNS no
 #   BatchMode no
 #   CheckHostIP yes
 #   AddressFamily any
 #   ConnectTimeout 0
 #   StrictHostKeyChecking ask
-#   IdentityFile ~/.ssh/identity
 #   IdentityFile ~/.ssh/id_rsa
 #   IdentityFile ~/.ssh/id_dsa
 #   IdentityFile ~/.ssh/id_ecdsa
@@ -57,12 +57,12 @@ HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,
 #   VisualHostKey no
 #   ProxyCommand ssh -q -W %h:%p gateway.example.com
 #   RekeyLimit 1G 1h
-TCPKeepAlive yes
-ConnectionAttempts 1
-ConnectTimeout 3
-HashKnownHosts no
-LogLevel INFO
-ChallengeResponseAuthentication no
-GlobalKnownHostsFile /etc/ssh/known_hosts/known_hosts /etc/ssh/known_hosts/known_hosts2 /etc/ssh/known_hosts/known_certs /etc/ssh/known_hosts/known_certs2
-
-Sendenv {{ ssh_environment_variables_to_send | join(' ') }}
+#   UserKnownHostsFile ~/.ssh/known_hosts.d/%k
+    SendEnv {{ ssh_environment_variables_to_send | join(' ') }}
+    HashKnownHosts no
+    TCPKeepAlive yes
+    ConnectionAttempts 1
+    ConnectTimeout 3
+    LogLevel INFO
+    ChallengeResponseAuthentication no
+    GlobalKnownHostsFile /etc/ssh/known_hosts/known_hosts /etc/ssh/known_hosts/known_hosts2 /etc/ssh/known_hosts/known_certs /etc/ssh/known_hosts/known_certs2
