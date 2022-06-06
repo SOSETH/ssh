@@ -97,3 +97,7 @@ sshd_listen_address:
 
 # Whether to install mosh
 ssh_install_mosh: False
+
+# Whether to turn on challenge-response (keep in mind you'd still need to add it to ssh_auth_methods)
+# This can be useful to allow pam-yubico based 2FA
+sshd_challenge_response_authentication: False

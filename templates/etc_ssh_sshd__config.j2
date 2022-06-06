@@ -44,11 +44,11 @@ DebianBanner yes
 {% endif %}
 
 ## Password
-PasswordAuthentication {{ ('password' in ssh_auth_methods) | ternary('yes','no') }}
+PasswordAuthentication {{ ('password' in ssh_auth_methods|map('split',',')|flatten ) | ternary('yes','no') }}
 PermitEmptyPasswords no
 
 ## Keys
-PubkeyAuthentication {{ ('publickey' in ssh_auth_methods) | ternary('yes','no') }}
+PubkeyAuthentication {{ ('publickey' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
 {% if ssh_publickey_sssd %}
 AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
 AuthorizedKeysCommandUser nobody
@@ -59,7 +59,7 @@ AuthorizedKeysFile /etc/ssh/authorized_keys/%u/backup /etc/ssh/authorized_keys/%
 #HostKeyAgent
 
 ## Challenge-response options
-ChallengeResponseAuthentication no
+ChallengeResponseAuthentication {{ sshd_challenge_response_authentication| ternary('yes','no') }}
 KbdInteractiveAuthentication no
 
 ## Kerberos options
@@ -69,7 +69,7 @@ KerberosAuthentication no
 #KerberosTicketCleanup
 
 ## GSSAPI options
-GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods) | ternary('yes','no') }}
+GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
 #GSSAPIKeyExchange
 GSSAPICleanupCredentials yes
 #GSSAPIStrictAcceptorCheck
