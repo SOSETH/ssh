@@ -1,133 +1,30 @@
 # Managed with Ansible (role: ssh)
 # Do not edit!
 
-# Network
-AddressFamily any
+#       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
 Port {{ ansible_port | default(22,boolean=True) }}
+AddressFamily any
 {% for item in sshd_listen_address %}
 ListenAddress {{ item }}
 {% endfor %}
-TCPKeepAlive yes
 
-## DNS
-UseDNS {{ sshd_use_dns | ternary('yes','no') }}
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+#HostKey /etc/ssh/ssh_host_ed25519_key
 
-# Keys
-HostKey         /etc/ssh/ssh_host_rsa_key
-#HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub
-HostKey         /etc/ssh/ssh_host_ed25519_key
-#HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
-#TrustedUserCAKeys
-
-# Logging
-SyslogFacility AUTH
-LogLevel INFO
-
-# Authentication
-{% if sshv.stdout is version('7.5', '<') %}
-UsePrivilegeSeparation sandbox
-{% endif %}
-MaxStartups 10:30:100
-MaxAuthTries 6
-LoginGraceTime 30
-# Usually used to configure multi-factor authentication, AuthenticationMethods can also be used to restrict the available methods to just the specified list. The elements on the list still have to be enabled with their own respective option, so, for "publickey" the option "PubkeyAuthentication" has to be "yes".
-AuthenticationMethods {{ ssh_auth_methods|join(' ')}}
-
-PermitRootLogin {{ sshd_permit_root_login }}
-StrictModes yes
-
-## Messages
-#VersionAddendum
-#Banner /etc/issue.net
-{% if ansible_distribution == "Debian" %}
-DebianBanner yes
-{% endif %}
-
-## Password
-PasswordAuthentication {{ ('password' in ssh_auth_methods|map('split',',')|flatten ) | ternary('yes','no') }}
-PermitEmptyPasswords no
-
-## Keys
-PubkeyAuthentication {{ ('publickey' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
-{% if ssh_publickey_sssd %}
-AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
-AuthorizedKeysCommandUser nobody
-{% endif %}
-AuthorizedKeysFile /etc/ssh/authorized_keys/%u/backup /etc/ssh/authorized_keys/%u/recovery /etc/ssh/authorized_keys/%u/authorized_keys %h/.ssh/authorized_keys
-#AuthorizedPrincipalsFile
-#RevokedKeys
-#HostKeyAgent
-
-## Challenge-response options
-ChallengeResponseAuthentication {{ sshd_challenge_response_authentication| ternary('yes','no') }}
-KbdInteractiveAuthentication no
-
-## Kerberos options
-KerberosAuthentication no
-#KerberosGetAFSToken
-#KerberosOrLocalPasswd
-#KerberosTicketCleanup
-
-## GSSAPI options
-GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
-#GSSAPIKeyExchange
-GSSAPICleanupCredentials yes
-#GSSAPIStrictAcceptorCheck
-#GSSAPIStoreCredentialsOnRekey
-
-## Host
-HostbasedAuthentication no
-#IgnoreRhosts
-#IgnoreUserKnownHosts
-#HostbasedUsesNameFromPacketOnly
-
-## PAM
-UsePAM yes
-
-## User
-#DenyUsers
-#AllowUsers
-#DenyGroups
-{% if sshd_restrict_users %}
-AllowGroups {{ sshd_restriction_group }}
-{% endif %}
-
-# After authentication
-#ChrootDirectory
-#ForceCommand
-
-## Messages
-PrintMotd no
-PrintLastLog yes
-
-## Environment
-PermitUserEnvironment no
-
-# Session features
-AllowAgentForwarding yes
-AllowTcpForwarding yes
-PermitOpen any
-#GatewayPorts
-#PermitTunnel
-#PermitTTY
-
-## Connection
-ClientAliveInterval 600
-ClientAliveCountMax 3
-Compression delayed
-MaxSessions 10
-
-## X11
-{% if ssh_allow_x11_fwd %}
-X11Forwarding yes
-X11DisplayOffset 10
-{% else %}
-X11Forwarding no
-#X11DisplayOffset 10
-{% endif %}
-#X11UseLocalhost
-#XAuthLocation
-
+# Ciphers and keying
+RekeyLimit default 6h
 # Crypto, according to https://wiki.mozilla.org/Security/Guidelines/OpenSSH
 {% if sshv.stdout is version('6.7', '>=') %}
 # Modern
@@ -141,13 +38,120 @@ MACs hmac-sha2-512,hmac-sha2-256
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 {% endif %}
 
-RekeyLimit default 6h
+# Logging
+#SyslogFacility AUTH
+#LogLevel INFO
 
-# Misc
-{% if ansible_distribution == "Debian" or ansible_distribution == "Ubuntu" %}
-Subsystem sftp /usr/lib/openssh/sftp-server
-{% elif ansible_distribution == "Fedora" %}
-Subsystem sftp /usr/libexec/openssh/sftp-server
+# Authentication:
+
+LoginGraceTime 30
+PermitRootLogin {{ sshd_permit_root_login }}
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+# Usually used to configure multi-factor authentication, AuthenticationMethods can also be used to restrict the available methods to just the specified list. The elements on the list still have to be enabled with their own respective option, so, for "publickey" the option "PubkeyAuthentication" has to be "yes".
+AuthenticationMethods {{ ssh_auth_methods|join(' ')}}
+
+PubkeyAuthentication {{ ('publickey' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
+AuthorizedKeysFile /etc/ssh/authorized_keys/%u/backup /etc/ssh/authorized_keys/%u/recovery /etc/ssh/authorized_keys/%u/authorized_keys %h/.ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+{% if ssh_publickey_sssd %}
+
+AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
+AuthorizedKeysCommandUser nobody
 {% endif %}
 
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+#IgnoreUserKnownHosts no
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+PasswordAuthentication {{ ('password' in ssh_auth_methods|map('split',',')|flatten ) | ternary('yes','no') }}
+#PermitEmptyPasswords no
+
+ChallengeResponseAuthentication {{ sshd_challenge_response_authentication| ternary('yes','no') }}
+KbdInteractiveAuthentication no
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+
+# GSSAPI options
+GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods|map('split',',')|flatten) | ternary('yes','no') }}
+#GSSAPICleanupCredentials yes
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+{% if ssh_allow_x11_fwd %}
+X11Forwarding yes
+X11DisplayOffset 10
+{% else %}
+X11Forwarding no
+#X11DisplayOffset 10
+{% endif %}
+#X11UseLocalhost yes
+#PermitTTY yes
+PrintMotd no
+PrintLastLog no
+#TCPKeepAlive yes
+#PermitUserEnvironment no
+#Compression delayed
+ClientAliveInterval 600
+#ClientAliveCountMax 3
+UseDNS {{ sshd_use_dns | ternary('yes','no') }}
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Allow client to pass locale environment variables
 AcceptEnv {{ sshd_acceptable_environment_variables|join(' ') }}
+
+# override default of no subsystems
+{% if ansible_distribution == "Debian" or ansible_distribution == "Ubuntu" %}
+Subsystem	sftp	/usr/lib/openssh/sftp-server
+{% elif ansible_distribution == "Fedora" %}
+Subsystem	sftp	/usr/libexec/openssh/sftp-server
+{% endif %}
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#	X11Forwarding no
+#	AllowTcpForwarding no
+#	PermitTTY no
+#	ForceCommand cvs server
+
+{% if sshd_restrict_users %}
+AllowGroups {{ sshd_restriction_group }}
+{% endif %}
+{% if sshv.stdout is version('7.5', '<') %}
+UsePrivilegeSeparation sandbox
+{% endif %}
+{% if ansible_distribution == "Debian" %}
+DebianBanner yes
+{% endif %}
