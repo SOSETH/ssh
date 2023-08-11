@@ -1,8 +1,6 @@
 # Managed with Ansible (role: ssh)
 # Do not edit!
 
-#       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
-
 # This is the sshd server system-wide configuration file.  See
 # sshd_config(5) for more information.
 
@@ -63,11 +61,13 @@ AuthorizedKeysCommandUser nobody
 # Don't read the user's ~/.rhosts and ~/.shosts files
 #IgnoreRhosts yes
 
+# To disable tunneled clear text passwords, change to no here!
 PasswordAuthentication {{ ('password' in ssh_auth_methods|map('split',',')|flatten ) | ternary('yes','no') }}
 #PermitEmptyPasswords no
 
-ChallengeResponseAuthentication {{ sshd_challenge_response_authentication| ternary('yes','no') }}
-KbdInteractiveAuthentication no
+# Change to yes to enable challenge-response passwords (beware issues with
+# some PAM modules and threads)
+KbdInteractiveAuthentication {{ sshd_challenge_response_authentication| ternary('yes','no') }}
 
 # Kerberos options
 #KerberosAuthentication no
@@ -83,13 +83,13 @@ GSSAPIAuthentication {{ ('gssapi-with-mic' in ssh_auth_methods|map('split',',')|
 
 # Set this to 'yes' to enable PAM authentication, account processing,
 # and session processing. If this is enabled, PAM authentication will
-# be allowed through the ChallengeResponseAuthentication and
+# be allowed through the KbdInteractiveAuthentication and
 # PasswordAuthentication.  Depending on your PAM configuration,
-# PAM authentication via ChallengeResponseAuthentication may bypass
-# the setting of "PermitRootLogin without-password".
+# PAM authentication via KbdInteractiveAuthentication may bypass
+# the setting of "PermitRootLogin prohibit-password".
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
-# and ChallengeResponseAuthentication to 'no'.
+# and KbdInteractiveAuthentication to 'no'.
 UsePAM yes
 
 #AllowAgentForwarding yes
@@ -112,7 +112,7 @@ PrintLastLog no
 ClientAliveInterval 600
 #ClientAliveCountMax 3
 UseDNS {{ sshd_use_dns | ternary('yes','no') }}
-#PidFile /var/run/sshd.pid
+#PidFile /run/sshd.pid
 #MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none
