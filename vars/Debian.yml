@@ -6,3 +6,5 @@ pkgs:
   - openssh-client
   - coreutils
   - sshfs
+
+ssh_daemon_service: ssh

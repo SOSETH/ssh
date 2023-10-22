@@ -30,7 +30,7 @@
       owner: root
       group: root
       mode: 0644
-    notify: restart ssh
+    notify: Restart SSH
     register: result
 
   - name: Copy client configuration
@@ -112,7 +112,7 @@
       group: root
       mode: 0644
       content: "{{ lookup('file', sshd_moduli_name) }}"
-    notify: restart ssh
+    notify: Restart SSH
 
   - name: Install restricted-ssh-commands
     when: sshd_restricted_commands is defined
