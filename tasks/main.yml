@@ -1,139 +1,144 @@
 ---
-  # Load distribution-specific config
-  - include_vars: "{{ ansible_distribution }}.yml"
+# Load distribution-specific config
+- name: "Include distribution specific variables ({{ ansible_distribution }})"
+  ansible.builtin.include_vars: "{{ ansible_distribution }}.yml"
 
-  - name: Install ssh packages
-    become: True
-    package:
-      name: "{{ pkgs }}"
-      state: present
+- name: Install ssh packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ pkgs }}"
+    state: present
 
-  - name: Install ssh packages
-    when: ssh_install_mosh | bool
-    become: True
-    package:
-      name: mosh
-      state: present
+- name: Install ssh packages
+  when: ssh_install_mosh | bool
+  become: true
+  ansible.builtin.package:
+    name: mosh
+    state: present
 
-  - name: Load OpenSSH version
-    check_mode: False
-    shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
-    register: sshv
-    changed_when: False
+- name: Load OpenSSH version
+  check_mode: false
+  ansible.builtin.shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
+  register: sshv
+  changed_when: false
 
-  - name: Copy host configuration
-    become: True
-    template:
-      src: etc_ssh_sshd__config.j2
-      dest: /etc/ssh/sshd_config
-      validate: 'sshd -T -f %s'
-      owner: root
-      group: root
-      mode: 0644
-    notify: Restart SSH
-    register: result
+- name: Copy host configuration
+  become: true
+  ansible.builtin.template:
+    src: etc_ssh_sshd__config.j2
+    dest: /etc/ssh/sshd_config
+    validate: 'sshd -T -f %s'
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart SSH
+  register: result
 
-  - name: Copy client configuration
-    become: True
-    template:
-      src: etc_ssh_ssh__config.j2
-      dest: /etc/ssh/ssh_config
-      owner: root
-      group: root
-      mode: 0644
+- name: Copy client configuration
+  become: true
+  ansible.builtin.template:
+    src: etc_ssh_ssh__config.j2
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: "0644"
 
-  - set_fact:
-      sshd_additional_root_cfg: "{{ sshd_additional_user_cfg | selectattr('name', 'eq', 'root') | list }}"
+- name: Gather root user config
+  ansible.builtin.set_fact:
+    sshd_additional_root_cfg: "{{ sshd_additional_user_cfg | selectattr('name', 'eq', 'root') | list }}"
 
-  - name: Merge ssh_authorized_keys with additional keys for root
-    set_fact:
-      sshd_root_authorized_keys: "{{ sshd_additional_root_cfg[0].authorized_keys + ssh_authorized_keys }}"
-    when: sshd_additional_root_cfg != []
+- name: Merge ssh_authorized_keys with additional keys for root
+  ansible.builtin.set_fact:
+    sshd_root_authorized_keys: "{{ sshd_additional_root_cfg[0].authorized_keys + ssh_authorized_keys }}"
+  when: sshd_additional_root_cfg != []
 
-  - name: Use ssh_authorized_keys as sshd_root_authorized_keys
-    set_fact:
-      sshd_root_authorized_keys: "{{ ssh_authorized_keys }}"
-    when: sshd_additional_root_cfg == []
+- name: Use ssh_authorized_keys as sshd_root_authorized_keys
+  ansible.builtin.set_fact:
+    sshd_root_authorized_keys: "{{ ssh_authorized_keys }}"
+  when: sshd_additional_root_cfg == []
 
-  - name: Configure authorized keys of root
-    include_tasks: userconfig.yml
-    with_items:
-      - name: root
-        authorized_keys: "{{ sshd_root_authorized_keys }}"
-        exclusive: "{{ ssh_manage_root_keys_exclusively }}"
-        deploy_in_etc: "{{ ssh_deploy_root_keys_in_etc }}"
+- name: Configure authorized keys of root
+  ansible.builtin.include_tasks: userconfig.yml
+  with_items:
+    - name: root
+      authorized_keys: "{{ sshd_root_authorized_keys }}"
+      exclusive: "{{ ssh_manage_root_keys_exclusively }}"
+      deploy_in_etc: "{{ ssh_deploy_root_keys_in_etc }}"
 
-  - name: Add recovery key
-    include_tasks: userconfig.yml
-    with_items:
-      - name: root
-        authorized_keys: recovery
-        key_path: "/etc/ssh/authorized_keys/root/recovery"
-        exclusive: True
-    when: ssh_deploy_recovery_key | bool
+- name: Add recovery key
+  ansible.builtin.include_tasks: userconfig.yml
+  with_items:
+    - name: root
+      authorized_keys: recovery
+      key_path: "/etc/ssh/authorized_keys/root/recovery"
+      exclusive: true
+  when: ssh_deploy_recovery_key | bool
 
-  - name: Configure additional users
-    when: sshd_additional_user_cfg != []
-    include_tasks: userconfig.yml
-    with_items: "{{ sshd_additional_user_cfg | selectattr('name', 'ne', 'root') | list }}"
+- name: Configure additional users
+  when: sshd_additional_user_cfg != []
+  ansible.builtin.include_tasks: userconfig.yml
+  with_items: "{{ sshd_additional_user_cfg | selectattr('name', 'ne', 'root') | list }}"
 
-  - name: Deploy .k5login for root
-    become: True
-    when: sshd_principals_for_root != []
-    template:
-      src: k5login.j2
-      dest: /root/.k5login
-      owner: root
-      group: root
-      mode: 0640
+- name: Deploy .k5login for root
+  become: true
+  when: sshd_principals_for_root != []
+  ansible.builtin.template:
+    src: k5login.j2
+    dest: /root/.k5login
+    owner: root
+    group: root
+    mode: "0640"
 
-  - name: Create SSH signon restriction group
-    when: sshd_restrict_users and sshd_manage_restriction_group
-    become: True
-    group:
-      name: "{{ sshd_restriction_group }}"
-      system: yes
+- name: Create SSH signon restriction group
+  when: sshd_restrict_users and sshd_manage_restriction_group
+  become: true
+  ansible.builtin.group:
+    name: "{{ sshd_restriction_group }}"
+    system: true
 
-  - name: Add users to SSH signon restriction group
-    when: sshd_restrict_users and sshd_manage_restriction_group
-    become: True
-    user:
-      name: "{{ item }}"
-      groups: "{{ sshd_restriction_group }}"
-      append: yes
-    with_items: "{{ sshd_allowed_users }}"
+- name: Add users to SSH signon restriction group
+  when: sshd_restrict_users and sshd_manage_restriction_group
+  become: true
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ sshd_restriction_group }}"
+    append: true
+  with_items: "{{ sshd_allowed_users }}"
 
-  - name: Replace moduli
-    when: sshd_replace_moduli | bool
-    become: True
-    copy:
-      dest: "/etc/ssh/moduli"
-      owner: root
-      group: root
-      mode: 0644
-      content: "{{ lookup('file', sshd_moduli_name) }}"
-    notify: Restart SSH
+- name: Replace moduli
+  when: sshd_replace_moduli | bool
+  become: true
+  ansible.builtin.copy:
+    dest: "/etc/ssh/moduli"
+    owner: root
+    group: root
+    mode: "0644"
+    content: "{{ lookup('file', sshd_moduli_name) }}"
+  notify: Restart SSH
 
-  - name: Install restricted-ssh-commands
-    when: sshd_restricted_commands is defined
-    become: True
-    apt:
-      name: restricted-ssh-commands
-      state: present
+- name: Install restricted-ssh-commands
+  when: sshd_restricted_commands is defined
+  become: true
+  ansible.builtin.apt:
+    name: restricted-ssh-commands
+    state: present
 
-  - name: Ensure restricted-ssh-commands directory exists
-    when: sshd_restricted_commands is defined
-    become: True
-    file:
-      path: "/etc/restricted-ssh-commands"
-      state: directory
+- name: Ensure restricted-ssh-commands directory exists
+  when: sshd_restricted_commands is defined
+  become: true
+  ansible.builtin.file:
+    path: "/etc/restricted-ssh-commands"
+    state: directory
+    mode: "0755"
 
-  - name: Write restricted-ssh-commands configs
-    become: True
-    when: sshd_restricted_commands is defined
-    template:
-      src: restricted-ssh-commands.j2
-      dest: "/etc/restricted-ssh-commands/{{ item.user }}"
-    loop: "{{ sshd_restricted_commands }}"
+- name: Write restricted-ssh-commands configs
+  become: true
+  when: sshd_restricted_commands is defined
+  ansible.builtin.template:
+    src: restricted-ssh-commands.j2
+    dest: "/etc/restricted-ssh-commands/{{ item.user }}"
+    mode: "0644"
+  loop: "{{ sshd_restricted_commands }}"
 
-  - meta: flush_handlers
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

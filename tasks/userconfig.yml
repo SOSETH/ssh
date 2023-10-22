@@ -1,64 +1,64 @@
 ---
-  - name: Set key_path
-    set_fact:
-      key_path: "{{ item.key_path }}"
-    when: item.key_path is defined
+- name: Set key_path
+  ansible.builtin.set_fact:
+    key_path: "{{ item.key_path }}"
+  when: item.key_path is defined
 
-  - name: Set key_path
-    set_fact:
-      key_path: "/etc/ssh/authorized_keys/{{ item.name }}/authorized_keys"
-    when: item.key_path is not defined and item.deploy_in_etc is defined and item.deploy_in_etc
+- name: Set key_path
+  ansible.builtin.set_fact:
+    key_path: "/etc/ssh/authorized_keys/{{ item.name }}/authorized_keys"
+  when: item.key_path is not defined and item.deploy_in_etc is defined and item.deploy_in_etc
 
-  - name: "Create {{ key_path | dirname }}"
-    become: True
-    file:
-      path: "{{ key_path | dirname }}"
-      state: directory
-      owner: root
-      group: root
-      mode: 0700
-    when: item.key_path is defined or (item.deploy_in_etc is defined and item.deploy_in_etc)
+- name: "Create {{ key_path | dirname }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ key_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when: item.key_path is defined or (item.deploy_in_etc is defined and item.deploy_in_etc)
 
-  - name: "Add authorized keys for user {{ item.name }} (exclusive mode)"
-    block:
-      - name: Lookup SSH pubkeys from keyfiles and create ssh_pubkeys_list
-        set_fact:
-          ssh_pubkeys_list: "{{ lookup('file', ssh_user_key_loc + '/' + key_item + '.pub') }}"
-        with_items: "{{ item.authorized_keys }}"
-        loop_control:
-          loop_var: key_item
-        register: ssh_pubkeys_results_list
+- name: "Add authorized keys for user (exclusive mode): {{ item.name }}"
+  when: item.authorized_keys is defined and item.exclusive is defined and item.exclusive
+  block:
+    - name: Lookup SSH pubkeys from keyfiles and create ssh_pubkeys_list
+      ansible.builtin.set_fact:
+        ssh_pubkeys_list: "{{ lookup('file', ssh_user_key_loc + '/' + key_item + '.pub') }}"
+      with_items: "{{ item.authorized_keys }}"
+      loop_control:
+        loop_var: key_item
+      register: ssh_pubkeys_results_list
 
-      - name: Iterate over ssh_pubkeys_list and join into a string
-        set_fact:
-          ssh_pubkeys_string: "{{ ssh_pubkeys_results_list.results | map(attribute='ansible_facts.ssh_pubkeys_list') | list | join('\n') }}"
+    - name: Iterate over ssh_pubkeys_list and join into a string
+      ansible.builtin.set_fact:
+        ssh_pubkeys_string: "{{ ssh_pubkeys_results_list.results | map(attribute='ansible_facts.ssh_pubkeys_list') | list | join('\n') }}"
 
-      - name: Add authorized keys
-        become: True
-        authorized_key:
-          user: "{{ item.name}}"
-          key: "{{ ssh_pubkeys_string }}"
-          path: "{{ omit if key_path is undefined else key_path }}"
-          exclusive: True
-    when: item.authorized_keys is defined and item.exclusive is defined and item.exclusive
+    - name: Add authorized keys
+      become: true
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ ssh_pubkeys_string }}"
+        path: "{{ omit if key_path is undefined else key_path }}"
+        exclusive: true
 
-  - name: "Add authorized keys for user {{ item.name }} (non-exclusive mode)"
-    become: True
-    authorized_key:
-      user: "{{ item.name }}"
-      key: "{{ lookup('file', ssh_user_key_loc + '/' + item2 + '.pub') }}"
-      path: "{{ omit if key_path is undefined else key_path }}"
-    with_items: "{{ item.authorized_keys }}"
-    loop_control:
-      loop_var: item2
-    when: item.authorized_keys is defined and item.exclusive is not defined or not item.exclusive
+- name: "Add authorized keys for user (non-exclusive mode): {{ item.name }}"
+  become: true
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', ssh_user_key_loc + '/' + item2 + '.pub') }}"
+    path: "{{ omit if key_path is undefined else key_path }}"
+  with_items: "{{ item.authorized_keys }}"
+  loop_control:
+    loop_var: item2
+  when: item.authorized_keys is defined and item.exclusive is not defined or not item.exclusive
 
-  - name: "Deploy .k5login for {{ item.name }}"
-    become: True
-    template:
-      src: k5login-user.j2
-      dest: "/home/{{ item.name }}/.k5login"
-      owner: "{{ item.name }}"
-      group: root
-      mode: 0640
-    when: item.k5login is defined
+- name: "Deploy .k5login for {{ item.name }}"
+  become: true
+  ansible.builtin.template:
+    src: k5login-user.j2
+    dest: "/home/{{ item.name }}/.k5login"
+    owner: "{{ item.name }}"
+    group: root
+    mode: "0640"
+  when: item.k5login is defined

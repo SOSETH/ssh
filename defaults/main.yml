@@ -1,17 +1,19 @@
 ---
-# The comprehensive list of public user key files used to make up the authorized_keys file on the target. The filenames given here will be appended the suffix ".pub".
+# The comprehensive list of public user key files used to make up the authorized_keys file on the target.
+# The filenames given here will be appended the suffix ".pub".
 ssh_authorized_keys: []
 
 # If set to True all keys which aren't listed in `ssh_authorized_keys` are deleted on the next run.
-ssh_manage_root_keys_exclusively: True
+ssh_manage_root_keys_exclusively: true
 
 # Keys are deployed in /etc/ssh/authorized_keys/root/authorized_keys to avoid interference with software that manages ~/.ssh/authorized_keys as well
-ssh_deploy_root_keys_in_etc: False
+ssh_deploy_root_keys_in_etc: false
 
 # If set to true, the SSH server on target will allow X11 forwarding.
 ssh_allow_x11_fwd: false
 
-# The following variables generally don't need to be changed except when the Ansible repository is re-organized internally. They are the configuration for shell scripts run on the runner for key generation.
+# The following variables generally don't need to be changed except when the Ansible repository is re-organized internally.
+# They are the configuration for shell scripts run on the runner for key generation.
 # Directory where SSH user keys are stored
 ssh_user_key_loc: '{{ config_repo_path }}/ssh-public-keys'
 
@@ -19,17 +21,17 @@ ssh_user_key_loc: '{{ config_repo_path }}/ssh-public-keys'
 ssh_auth_methods:
   - publickey
 
-ssh_publickey_sssd: False
+ssh_publickey_sssd: false
 
 # Deploy the special recovery key (recovery.pub) to all hosts (useful if the IAM fails)
-ssh_deploy_recovery_key: False
+ssh_deploy_recovery_key: false
 
 # List of ssh packages that should be installed (see vars/ for distribution specific variables).
 pkgs: []
 
 # Whether to use only modern ciphers on new clients (might impact connections
 # to old servers)
-ssh_strict_client: False
+ssh_strict_client: false
 
 # Environment variables to accept over SSH
 sshd_acceptable_environment_variables:
@@ -42,18 +44,18 @@ ssh_environment_variables_to_send:
   - LC_*
 
 # Whether to use DNS to reverse-lookup incoming connections
-sshd_use_dns: False
+sshd_use_dns: false
 
 # Kerberos principals to allow to sign in as root. This simply adds them to
 # root's .k5login file
 sshd_principals_for_root: []
 
 # Whether to restrict ssh login to a specific set of users
-sshd_restrict_users: False
+sshd_restrict_users: false
 
 # Whether to apply any of the restrictions using this role. Disable this if
 # you e.g. use a group from LDAP
-sshd_manage_restriction_group: True
+sshd_manage_restriction_group: true
 
 # Which users to allow if login is restricted
 sshd_allowed_users:
@@ -85,7 +87,7 @@ sshd_additional_user_cfg: []
 #      - maxf@EXAMPLE.ORG
 
 # Replace the distribution-provided moduli with custom ones
-sshd_replace_moduli: False
+sshd_replace_moduli: false
 
 # If we're to replace the moduli, how are they named in the current playbook?
 sshd_moduli_name: "ssh.moduli"
@@ -96,8 +98,8 @@ sshd_listen_address:
   - 0.0.0.0
 
 # Whether to install mosh
-ssh_install_mosh: False
+ssh_install_mosh: false
 
 # Whether to turn on challenge-response (keep in mind you'd still need to add it to ssh_auth_methods)
 # This can be useful to allow pam-yubico based 2FA
-sshd_challenge_response_authentication: False
+sshd_challenge_response_authentication: false

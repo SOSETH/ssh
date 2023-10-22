@@ -1,26 +1,16 @@
 ---
 galaxy_info:
   author: Damiano Boppart, Philip Stark
+  namespace: soseth
   description: Configure OpenSSH's server and client
   company: SOSETH
   issue_tracker_url: https://github.com/SOSETH/ssh/issues
-  min_ansible_version: 2.6
+  min_ansible_version: "2.6"
   license: GNU General Public License, version 3 (GPL-3.0)
   platforms:
     - name: Debian
-      versions:
-        - buster
-        - bullseye
     - name: Ubuntu
-      versions:
-       - bionic
-       - focal
-       - jammy
-       - kinetic
     - name: Fedora
-      versions:
-        - 36
-        - 37
   galaxy_tags:
     - system
     - security
