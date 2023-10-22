@@ -16,12 +16,6 @@
     name: mosh
     state: present
 
-- name: Load OpenSSH version
-  check_mode: false
-  ansible.builtin.shell: "ssh -V 2>&1 | sed -E 's/([a-zA-Z_]+)([0-9.]+)(.*)/\\2/g'"
-  register: sshv
-  changed_when: false
-
 - name: Copy host configuration
   become: true
   ansible.builtin.template:
